@@ -34,3 +34,13 @@ def test_read_existing_single_mp3():
     '''
     with pytest.raises(ValueError):
         wbr.read_single_wav(EXISTING_SINGLE_MP3)
+
+
+def test_read_single_wav_samplingFreq():
+    '''
+    result of reading an existing WAV has sampling frequency
+    EXISTING_SINGLE_WAV above has known sampling freq of 44100
+    '''
+    result = wbr.read_single_wav(EXISTING_SINGLE_WAV)
+
+    assert result["sampling_frequency"] == 44100
