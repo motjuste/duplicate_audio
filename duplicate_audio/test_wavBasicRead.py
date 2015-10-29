@@ -44,3 +44,8 @@ def test_read_single_wav_samplingFreq():
     result = wbr.read_single_wav(EXISTING_SINGLE_WAV)
 
     assert result["sampling_frequency"] == 44100
+
+
+def test_read_single_existing_wav():
+    result = wbr.read_list_wav([EXISTING_SINGLE_WAV, EXISTING_SINGLE_WAV])
+    assert len(result) == 2

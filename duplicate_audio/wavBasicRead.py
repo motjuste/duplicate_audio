@@ -29,3 +29,7 @@ def read_single_wav(file_path):
         # TODO: @motjuste: check file extension itself?
         print("Given filename: " + file_path)
         raise
+
+
+def read_list_wav(file_paths):
+    return list(map(read_single_wav, file_paths))
