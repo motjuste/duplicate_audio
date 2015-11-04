@@ -39,5 +39,8 @@ def convert_single_mp3ToWav(file_path, save_to_dir=None):
                '-i', os.path.abspath(file_path),  # Input file
                '-y',  # overwrite if already exists
                os.path.abspath(new_wav_file_path)]
-    subprocess.call(command, stderr=subprocess.STDOUT)
+    ret = subprocess.call(command, stderr=subprocess.STDOUT)
+    if ret > 0:
+        print("There was an error with ffmpeg")
+        print("file: ", file_path)
     # TODO: @motjuste: handle any errors while using ffmpeg
