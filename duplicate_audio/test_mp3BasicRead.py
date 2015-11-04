@@ -16,3 +16,7 @@ def test_convert_existing_single_mp3ToWav():
     should not raise an exception
     '''
     mbr.convert_single_mp3ToWav(EXISTING_SINGLE_MP3)
+
+
+def test_read_single_mp3_nosave():
+    mbr.read_single_mp3(EXISTING_SINGLE_MP3)
