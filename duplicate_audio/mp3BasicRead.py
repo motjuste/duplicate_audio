@@ -44,3 +44,11 @@ def convert_single_mp3ToWav(file_path, save_to_dir=None):
         print("There was an error with ffmpeg")
         print("file: ", file_path)
     # TODO: @motjuste: handle any errors while using ffmpeg
+
+
+def convert_iter_mp3ToWav(file_paths):
+    return map(convert_single_mp3ToWav, file_paths)
+
+
+def convert_list_mp3ToWav(file_paths):
+    return list(convert_iter_mp3ToWav(file_paths))

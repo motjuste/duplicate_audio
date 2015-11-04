@@ -31,5 +31,9 @@ def read_single_wav(file_path):
         raise
 
 
+def iter_list_wav(file_paths):
+    return map(read_single_wav, file_paths)
+
+
 def read_list_wav(file_paths):
-    return list(map(read_single_wav, file_paths))
+    return list(iter_list_wav(file_paths))
