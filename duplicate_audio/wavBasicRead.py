@@ -5,7 +5,7 @@ import os.path as ospath
 import scipy.io.wavfile as spwav
 
 
-def read_single_wav(file_path):
+def read_single_wav(file_path, orig_file_path=None):
     '''
     reads wav file at file_path using the scipy.io.wavfile package
 
@@ -16,7 +16,8 @@ def read_single_wav(file_path):
     '''
     try:
         [Fs, data] = spwav.read(file_path)
-        return {"abs_file_path": ospath.abspath(file_path),
+        file_path_ = file_path if orig_file_path is None else orig_file_path
+        return {"abs_file_path": ospath.abspath(file_path_),
                 "sampling_frequency": Fs,
                 "data": data}
     except IOError:

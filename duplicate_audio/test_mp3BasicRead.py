@@ -1,4 +1,5 @@
 import pytest
+import os.path as ospath
 import duplicate_audio.mp3BasicRead as mbr
 
 
@@ -21,7 +22,8 @@ def test_convert_existing_single_mp3ToWav():
 
 
 def test_read_single_mp3_nosave():
-    mbr.read_single_mp3(EXISTING_SINGLE_MP3)
+    res = mbr.read_single_mp3(EXISTING_SINGLE_MP3)
+    assert res["abs_file_path"] == ospath.abspath(EXISTING_SINGLE_MP3)
 
 
 def test_read_list_mp3_nosave():

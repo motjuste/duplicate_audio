@@ -65,7 +65,7 @@ def read_single_mp3(file_path, save_to_dir=None):
         save_to_dir = os.path.dirname(file_path) + os.sep + "wav_temp"
 
     path_to_wav = convert_single_mp3ToWav(file_path, save_to_dir)
-    read_wav = wbr.read_single_wav(path_to_wav)
+    read_wav = wbr.read_single_wav(path_to_wav, orig_file_path=file_path)
 
     if delete_intermediate:
         os.remove(path_to_wav)
@@ -94,7 +94,7 @@ def iter_list_mp3(file_paths, save_to_dir=None):
 
     for fp in file_paths:
         paths_to_wavs.append(convert_single_mp3ToWav(fp, save_to_dir))
-        yield wbr.read_single_wav(paths_to_wavs[-1])
+        yield wbr.read_single_wav(paths_to_wavs[-1], orig_file_path=fp)
 
     if delete_intermediates:
         for w in paths_to_wavs:
