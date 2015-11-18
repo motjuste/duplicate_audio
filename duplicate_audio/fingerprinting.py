@@ -51,11 +51,11 @@ def fingerprint_channel(dc, fs):
     [f_spec, t_spec, spec] = spectrogram(dc, fs=fs, scaling='spectrum')
     t_diff = t_spec[1] - t_spec[0]
 
-    lmx_loc = peak_local_max(spec, min_distance=PEAK_MIN_DIST,
-                             exclude_border=False, threshold_rel=0)
+    lmx_2d = peak_local_max(spec, min_distance=PEAK_MIN_DIST,
+                            exclude_border=False, threshold_rel=0,
+                            indices=False)
 
-    lmx_2d = np.zeros(spec.shape)
-    lmx_2d[lmx_loc[:, 0], lmx_loc[:, 1]] = 1
+    lmx_loc = np.transpose(np.nonzero(lmx_2d))
 
     # pad the lmx_2d for later target zoning
     # use the max TGT_ZONE properties
