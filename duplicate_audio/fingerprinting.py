@@ -43,6 +43,7 @@ def fingerprint(data, sampling_frequency, song_id):
 
     for c in range(n_channels):
         f = fingerprint_channel(data[:, c], sampling_frequency)
+
         for k in f.keys():
 
             # TODO: @motjuste: potential bug
@@ -90,5 +91,22 @@ def fingerprint_channel(dc, fs):
             value = t_spec[x]
 
             fingerprints.setdefault(fingerprint, []).append(value)
+
+    return fingerprints
+
+
+def add_to_fingerprints(data, sampling_freq, fingerprints, song_id):
+    n_channels = data.shape[1]
+
+    for c in range(n_channels):
+        f = fingerprint_channel(data[:, c], sampling_freq)
+        for k in f.keys():
+            # TODO: @motjuste: potential bug
+            if k not in fingerprints.keys():
+                fingerprints.setdefault(k, {song_id: {c: []}})
+            else:
+                fingerprints[k].setdefault(song_id, {c: []})
+
+            fingerprints[k][song_id][c] = f[k]
 
     return fingerprints
