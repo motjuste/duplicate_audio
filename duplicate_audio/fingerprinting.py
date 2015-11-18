@@ -1,3 +1,10 @@
+'''
+@mojuste
+NO TESTS!!!!
+'''
+# TODO: Write tests for fingerprinting
+
+
 import numpy as np
 from skimage.feature import peak_local_max
 from scipy.signal import spectrogram
