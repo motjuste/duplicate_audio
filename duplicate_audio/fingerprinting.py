@@ -20,7 +20,7 @@ TGT_ZONE = {
 PEAK_MIN_DIST = 2
 
 
-def fingerprint(data, sampling_frequency, song_id):
+def fingerprint(data, sampling_frequency, song_id, use_fpc2=False):
     '''
     function returns a dictionary with fingerprints as keys,
     and values as another dictionary, which has song_id as keys and
@@ -42,7 +42,10 @@ def fingerprint(data, sampling_frequency, song_id):
     fingerprints = dict(dict(dict(list())))
 
     for c in range(n_channels):
-        f = fingerprint_channel(data[:, c], sampling_frequency)
+        if use_fpc2:
+            f = fingerprint_channel_np(data[:, c], sampling_frequency)
+        else:
+            f = fingerprint_channel(data[:, c], sampling_frequency)
 
         for k in f.keys():
 
@@ -51,6 +54,62 @@ def fingerprint(data, sampling_frequency, song_id):
             # and this channel is definitely not there
             fingerprints.setdefault(k, {song_id: {c: []}})
             fingerprints[k][song_id][c] = f[k]
+
+    return fingerprints
+
+
+def fingerprint_channel_np(dc, fs):
+    [f_spec, t_spec, spec] = spectrogram(dc, fs=fs, scaling='spectrum')
+    t_diff = t_spec[1] - t_spec[0]
+
+    lmx_2d = peak_local_max(spec, min_distance=PEAK_MIN_DIST,
+                            exclude_border=False, threshold_rel=0,
+                            indices=False)
+
+    lmx_loc = np.transpose(np.nonzero(lmx_2d))
+
+    # pad the lmx_2d for later target zoning
+    # use the max TGT_ZONE properties
+    padding = max(TGT_ZONE.values()) + (TGT_ZONE["displacement"])
+    lmx_2d = np.pad(lmx_2d, padding,
+                    mode='constant', constant_values=0)
+
+    yu = np.unique(lmx_loc[:, 0])
+    yoffset = (yu + padding - 1).reshape(len(yu), 1)
+    Y, YO = np.meshgrid(np.arange(-TGT_ZONE["height_minus"],
+                                  TGT_ZONE["height_plus"]),
+                        yoffset)
+    Y_offset = Y + YO
+    lmimgX = lmx_2d[Y_offset, :]
+
+    y2o = (yu -
+           TGT_ZONE["height_minus"] - 1).reshape(len(yu), 1)
+
+    fingerprints = dict(list())
+    for yi, y in enumerate(yu):
+        lmimgx = lmimgX[yi, :, :]
+        xu = lmx_loc[np.where(lmx_loc[:, 0] == y)][:, 1]
+        xoffset = (xu + padding - 1).reshape(len(xu), 1)
+
+        X, XO = np.meshgrid(np.arange(TGT_ZONE["displacement"],
+                            TGT_ZONE["displacement"] + TGT_ZONE["width"]),
+                            xoffset)
+
+        X_offset = X + XO
+
+        zone = lmimgx[:, X_offset]
+
+        nonzero_loc = np.transpose(np.nonzero(zone))
+
+        f1 = np.tile(f_spec[y], (len(xu),))
+        f2 = nonzero_loc[:, 0] + y2o[yi]
+        t21 = nonzero_loc[:, -1] + TGT_ZONE["displacement"]
+        v = t_spec[nonzero_loc[:, 1]]
+
+        fp_zip = zip(zip(f1, f2, t21), v)
+
+        for k, v in fp_zip:
+            fingerprints.setdefault(k, []).append(v)
 
     return fingerprints
 
@@ -99,7 +158,7 @@ def add_to_fingerprints(data, sampling_freq, fingerprints, song_id):
     n_channels = data.shape[1]
 
     for c in range(n_channels):
-        f = fingerprint_channel(data[:, c], sampling_freq)
+        f = fingerprint_channel_np(data[:, c], sampling_freq)
         for k in f.keys():
             # TODO: @motjuste: potential bug
             if k not in fingerprints.keys():
