@@ -4,7 +4,6 @@ Utility functions to read mp3 files
 USES ffmpeg for mp3 to wav conversions
 '''
 import os
-import ntpath
 import subprocess
 import duplicate_audio.wavBasicRead as wbr
 

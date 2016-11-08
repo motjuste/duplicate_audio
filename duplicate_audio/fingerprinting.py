@@ -75,22 +75,19 @@ def fingerprint_channel_np(dc, fs):
                     mode='constant', constant_values=0)
 
     yu = np.unique(lmx_loc[:, 0])
-    yoffset = (yu + padding - 1).reshape(len(yu), 1)
+    yoffset = yu + padding
     Y, YO = np.meshgrid(np.arange(-TGT_ZONE["height_minus"],
                                   TGT_ZONE["height_plus"]),
                         yoffset)
     Y_offset = Y + YO
     lmimgX = lmx_2d[Y_offset, :]
 
-    y2o = (yu -
-           TGT_ZONE["height_minus"] - 1).reshape(len(yu), 1)
-
-    fingerprints = dict(list())
+    y2o = yu - TGT_ZONE["height_minus"] 
+    fp_list = []
     for yi, y in enumerate(yu):
         lmimgx = lmimgX[yi, :, :]
         xu = lmx_loc[np.where(lmx_loc[:, 0] == y)][:, 1]
-        xoffset = (xu + padding - 1).reshape(len(xu), 1)
-
+        xoffset = xu + padding
         X, XO = np.meshgrid(np.arange(TGT_ZONE["displacement"],
                             TGT_ZONE["displacement"] + TGT_ZONE["width"]),
                             xoffset)
@@ -101,15 +98,23 @@ def fingerprint_channel_np(dc, fs):
 
         nonzero_loc = np.transpose(np.nonzero(zone))
 
-        f1 = np.tile(f_spec[y], (len(xu),))
-        f2 = nonzero_loc[:, 0] + y2o[yi]
-        t21 = nonzero_loc[:, -1] + TGT_ZONE["displacement"]
+        f1 = np.tile(f_spec[y], (len(nonzero_loc),))
+        f2 = f_spec[nonzero_loc[:, 0] + y2o[yi]]
+        t21 = t_diff * (nonzero_loc[:, -1] + TGT_ZONE["displacement"])
         v = t_spec[nonzero_loc[:, 1]]
 
-        fp_zip = zip(zip(f1, f2, t21), v)
+        fpyzip = zip(zip(f1, f2, t21), v)
 
-        for k, v in fp_zip:
-            fingerprints.setdefault(k, []).append(v)
+        fpy = dict(list())
+
+        for k, v in fpyzip:
+            fpy.setdefault(k, []).append(v)
+
+        fp_list.append(fpy)
+
+    fingerprints = dict(list())
+    for fp in fp_list:
+        fingerprints.update(fp)
 
     return fingerprints
 

@@ -1,0 +1,30 @@
+providers: [
+  {
+    key: "bt"
+    config:
+      commands: [
+        {
+          project: "/Users/myrmidon/Delve/studies-mi/mmar/duplicate_audio/data"
+          source: "/Users/myrmidon/Delve/studies-mi/mmar/duplicate_audio/data/.build-tools.cson"
+          name: "Run Py.Test"
+          command: "py.test"
+          wd: "."
+          env: {}
+          modifier:
+            shell:
+              command: "bash -c"
+          stdout:
+            pty: false
+            highlighting: "ha"
+          stderr:
+            highlighting: "ha"
+          output:
+            console:
+              close_success: false
+              queue_in_buffer: true
+              stdin: false
+          version: 1
+        }
+      ]
+  }
+]

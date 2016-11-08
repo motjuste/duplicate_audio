@@ -16,7 +16,7 @@ def search_1channel_in_dictdb(qdata, sampling_freq, dict_db):
     returns tuple(votes, song_id, channel, timestamp)
     '''
     # get the fingerprints for the query data
-    q_fingerprints = fgr.fingerprint_channel(qdata, sampling_freq)
+    q_fingerprints = fgr.fingerprint_channel_np(qdata, sampling_freq)
 
     matches = get_matches_in_dictdb(q_fingerprints, dict_db)
 
